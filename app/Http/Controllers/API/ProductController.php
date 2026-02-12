@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\API;
 
 use App\Product;
-use App\ProductPurchase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductPurchaseResource;
 use App\Utils\Helpers;
+use App\Services\ProductService; // new
 
 class ProductController extends Controller
 {
+    protected $productService; // new
+
+    public function __construct(ProductService $productService) // new
+    {
+        $this->productService = $productService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +26,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::paginate(Helpers::getValue('default-pagination'));
+        $products = $this->productService->paginate(); // Updated to use service
         return ProductResource::collection($products);
     }
 
@@ -34,11 +40,7 @@ class ProductController extends Controller
     public function search(Request $request) {
         $products = collect([]);
         if($request->q) {
-            $q_builder = Product::where('code', 'like', "%{$request->q}%")->orWhere('name', 'like', "%{$request->q}%");
-            if($request->take) {
-                $q_builder->take($request->take);
-            }
-            $products = $q_builder->get();
+            $products = $this->productService->search($request->q, $request->take); // Updated to use service
         }
         return ProductResource::collection($products);
     }
@@ -58,8 +60,7 @@ class ProductController extends Controller
             'sell_price' => 'required|numeric',
             'stock' => 'required|numeric'
         ]);
-        $product = Product::create($request->all());
-        $product->load(['category', 'sub_category']);
+        $product = $this->productService->create($request->all()); // Updated to use service
         return new ProductResource($product);
     }
 
@@ -71,7 +72,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(["category", "sub_category", "category.sub_categories"]);
+        $product = $this->productService->find($product); // Updated to use service
         return new ProductResource($product);
     }
 
@@ -92,8 +93,7 @@ class ProductController extends Controller
             'stock' => 'numeric'
         ]);
         
-        $product->fill($request->all())->save();
-        $product->load(['category', 'sub_category']);
+        $product = $this->productService->update($product, $request->all()); // Updated to use service
         return new ProductResource($product);
     }
 
@@ -105,7 +105,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
+        $this->productService->delete($product); // Updated to use service
         return new ProductResource($product);
     }
 
@@ -126,25 +126,11 @@ class ProductController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-            $product_purchase = ProductPurchase::create([
-                'qty' => $request->qty,
-                'buy_price' => $request->buy_price,
-                'sell_price' => $request->sell_price,
-                'product_id' => $product->id
-            ]);
-
-            $product->buy_price = $request->buy_price;
-            $product->sell_price = $request->sell_price;
-            $product->stock += $request->qty;
-            $product->save();
-            $product->load('product_purchases');
-            
-            DB::commit();
+            $product_purchase = $this->productService->purchase($product, $request->only(['qty', 'buy_price', 'sell_price'])); // Updated to use service
             return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(201);
         } catch(Exception $e) {
-            DB::rolback();
-            abort(500, 'Server error');
+            // No longer need DB::rollback here as the service handles the transaction.
+            abort(500, 'Server error: ' . $e->getMessage()); // Added exception message for debugging
         }
     }
 
@@ -156,7 +142,7 @@ class ProductController extends Controller
      * 
      */
     public function getPurchases(Product $product) {
-        $product_purchases = $product->product_purchases()->paginate(Helpers::getValue('default-pagination'));
+        $product_purchases = $this->productService->getPurchases($product); // Updated to use service
         return ProductPurchaseResource::collection($product_purchases);
     }
-} 
+}

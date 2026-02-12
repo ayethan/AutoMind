@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\SubCategory;
-use App\Utils\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubCategoryResource;
+use App\Services\SubCategoryService; // New import
+use Exception;
 
 class SubCategoryController extends Controller
 {
+    protected $subCategoryService;
+
+    public function __construct(SubCategoryService $subCategoryService)
+    {
+        $this->subCategoryService = $subCategoryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +25,7 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $sub_categories = SubCategory::with(["category"])->paginate(Helpers::getValue('default-pagination'));
+        $sub_categories = $this->subCategoryService->paginateSubCategories();
         return (SubCategoryResource::collection($sub_categories));
     }
 
@@ -33,8 +41,12 @@ class SubCategoryController extends Controller
             "name" => "required"
         ]);
 
-        $sub_category = SubCategory::create($request->all());
-        return (new SubCategoryResource($sub_category));
+        try {
+            $sub_category = $this->subCategoryService->createSubCategory($request->all());
+            return (new SubCategoryResource($sub_category));
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -45,7 +57,7 @@ class SubCategoryController extends Controller
      */
     public function show(SubCategory $sub_category)
     {
-        $sub_category->load(["category"]);
+        $sub_category = $this->subCategoryService->findSubCategory($sub_category);
         return (new SubCategoryResource($sub_category));
     }
 
@@ -61,9 +73,12 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             "name" => "required"  
         ]);
-        $sub_category->fill($request->all())->save();
-
-        return (new SubCategoryResource($sub_category))->response()->setStatusCode(202);
+        try {
+            $sub_category = $this->subCategoryService->updateSubCategory($sub_category, $request->all());
+            return (new SubCategoryResource($sub_category))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -74,7 +89,11 @@ class SubCategoryController extends Controller
      */
     public function destroy(SubCategory $sub_category)
     {
-        $sub_category->delete();
-        return (new SubCategoryResource($sub_category))->response()->setStatusCode(202);
+        try {
+            $this->subCategoryService->deleteSubCategory($sub_category);
+            return (new SubCategoryResource($sub_category))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

@@ -6,9 +6,18 @@ use App\ExpenseType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseTypeResource;
+use App\Services\ExpenseTypeService;
+use Exception;
 
 class ExpenseTypeController extends Controller
 {
+    protected $expenseTypeService;
+
+    public function __construct(ExpenseTypeService $expenseTypeService)
+    {
+        $this->expenseTypeService = $expenseTypeService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,12 +25,12 @@ class ExpenseTypeController extends Controller
      */
     public function index()
     {
-        $expense_types = ExpenseType::paginate(config('tinyerp.default-pagination'));
+        $expense_types = $this->expenseTypeService->paginateExpenseTypes();
         return ExpenseTypeResource::collection($expense_types);
     }
 
     public function all() {
-        $expense_types = ExpenseType::all();
+        $expense_types = $this->expenseTypeService->getAllExpenseTypes();
         return ExpenseTypeResource::collection($expense_types);
     }
 
@@ -37,18 +46,23 @@ class ExpenseTypeController extends Controller
             "name" => "required"
         ]);
 
-        $expense_type = ExpenseType::create($request->all());
-        return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(201);
+        try {
+            $expense_type = $this->expenseTypeService->createExpenseType($request->all());
+            return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Expense  $expense_type
+     * @param  \App\ExpenseType  $expense_type
      * @return \Illuminate\Http\Response
      */
     public function show(ExpenseType $expense_type)
     {
+        $expense_type = $this->expenseTypeService->findExpenseType($expense_type);
         return (new ExpenseTypeResource($expense_type));
     }
 
@@ -56,7 +70,7 @@ class ExpenseTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Expense  $expense_type
+     * @param  \App\ExpenseType  $expense_type
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, ExpenseType $expense_type)
@@ -65,19 +79,27 @@ class ExpenseTypeController extends Controller
             'name' => 'required',
         ]);
 
-        $expense_type->fill($request->all())->save();
-        return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(202);
+        try {
+            $expense_type = $this->expenseTypeService->updateExpenseType($expense_type, $request->all());
+            return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Expense  $expense_type
+     * @param  \App\ExpenseType  $expense_type
      * @return \Illuminate\Http\Response
      */
     public function destroy(ExpenseType $expense_type)
     {
-        $expense_type->delete();
-        return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(202);
+        try {
+            $this->expenseTypeService->deleteExpenseType($expense_type);
+            return (new ExpenseTypeResource($expense_type))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

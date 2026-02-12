@@ -5,8 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\User; // Add this line
-use App\Observers\UserObserver; // Add this line
+use App\User;
+use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,9 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        JsonResource::withoutWrapping();    
+        JsonResource::withoutWrapping();
         Schema::defaultStringLength(191);
-        User::observe(UserObserver::class); // Add this line
+        User::observe(UserObserver::class);
     }
 
     /**

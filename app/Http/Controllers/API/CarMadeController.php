@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\CarMade;
-use App\Utils\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CarMadeResource;
+use App\Services\CarMadeService;
+use Exception;
 
 class CarMadeController extends Controller
 {
+    protected $carMadeService;
+
+    public function __construct(CarMadeService $carMadeService)
+    {
+        $this->carMadeService = $carMadeService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,12 +25,12 @@ class CarMadeController extends Controller
      */
     public function index()
     {
-        $car_mades = CarMade::paginate(Helpers::getValue('default-pagination'));
+        $car_mades = $this->carMadeService->paginateCarMades();
         return (CarMadeResource::collection($car_mades));
     }
 
     public function all() {
-        $car_mades = CarMade::all();
+        $car_mades = $this->carMadeService->getAllCarMades();
         return (CarMadeResource::collection($car_mades));
     }
 
@@ -37,8 +45,12 @@ class CarMadeController extends Controller
         $this->validate($request, [
             "name" => "required|unique:car_mades"
         ]);
-        $car_made = CarMade::create($request->all());
-        return (new CarMadeResource($car_made))->response()->setStatusCode(201);
+        try {
+            $car_made = $this->carMadeService->createCarMade($request->all());
+            return (new CarMadeResource($car_made))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -49,7 +61,8 @@ class CarMadeController extends Controller
      */
     public function show(CarMade $car_made)
     {
-        return (new CarMadeResource($car_made));        
+        $car_made = $this->carMadeService->findCarMade($car_made);
+        return (new CarMadeResource($car_made));
     }
 
     /**
@@ -65,8 +78,12 @@ class CarMadeController extends Controller
             "name" => "required|unique:car_mades,name,".$car_made->id
         ]);
 
-        $car_made->fill($request->all())->save();
-        return (new CarMadeResource($car_made))->response()->setStatusCode(202);
+        try {
+            $car_made = $this->carMadeService->updateCarMade($car_made, $request->all());
+            return (new CarMadeResource($car_made))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -77,7 +94,11 @@ class CarMadeController extends Controller
      */
     public function destroy(CarMade $car_made)
     {
-        $car_made->delete();
-        return (new CarMadeResource($car_made))->response()->setStatusCode(202);
+        try {
+            $this->carMadeService->deleteCarMade($car_made);
+            return (new CarMadeResource($car_made))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

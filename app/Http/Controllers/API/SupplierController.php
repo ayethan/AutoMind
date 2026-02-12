@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\Supplier;
-use App\Utils\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SupplierResource;
+use App\Services\SupplierService; // New import
+use Exception;
 
 class SupplierController extends Controller
 {
+    protected $supplierService;
+
+    public function __construct(SupplierService $supplierService)
+    {
+        $this->supplierService = $supplierService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +25,7 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        $suppliers = Supplier::paginate(Helpers::getValue('default-pagination'));
+        $suppliers = $this->supplierService->paginateSuppliers();
         return SupplierResource::collection($suppliers);
     }
 
@@ -33,8 +41,12 @@ class SupplierController extends Controller
             "name" => "required"
         ]);
 
-        $supplier = Supplier::create($request->all());
-        return (new SupplierResource($supplier))->response()->setStatusCode(201);
+        try {
+            $supplier = $this->supplierService->createSupplier($request->all());
+            return (new SupplierResource($supplier))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -45,6 +57,7 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
+        $supplier = $this->supplierService->findSupplier($supplier);
         return (new SupplierResource($supplier));
     }
 
@@ -61,8 +74,12 @@ class SupplierController extends Controller
             "name" => "required"
         ]);
 
-        $supplier->fill($request->all())->save();
-        return (new SupplierResource($supplier))->response()->setStatusCode(202);
+        try {
+            $supplier = $this->supplierService->updateSupplier($supplier, $request->all());
+            return (new SupplierResource($supplier))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -73,7 +90,11 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        $supplier->delete();
-        return (new SupplierResource($supplier))->response()->setStatusCode(202);
+        try {
+            $this->supplierService->deleteSupplier($supplier);
+            return (new SupplierResource($supplier))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

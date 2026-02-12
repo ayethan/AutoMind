@@ -3,14 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\Category;
-use App\Utils\Helpers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
+use App\Services\CategoryService;
+use Exception;
 
 class CategoryController extends Controller
 {
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +25,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(Helpers::getValue('default-pagination'));
+        $categories = $this->categoryService->paginateCategories();
         return (CategoryResource::collection($categories));
     }
 
@@ -27,9 +34,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function all() 
+    public function all()
     {
-        $categories = Category::with(["sub_categories"])->get();
+        $categories = $this->categoryService->getAllCategoriesWithSubCategories();
         return (CategoryResource::collection($categories));
     }
 
@@ -45,16 +52,10 @@ class CategoryController extends Controller
             "name" => "required"
         ]);
         try {
-            DB::beginTransaction();
-            $category = Category::create($request->all());
-            if(is_array($request->sub_categories)) {
-                $category->sub_categories()->createMany($request->sub_categories);
-            }
-            DB::commit();
+            $category = $this->categoryService->createCategory($request->all());
             return (new CategoryResource($category));
         } catch(Exception $e) {
-            DB::rollback();
-            abort(500);
+            abort(500, 'Server Error: ' . $e->getMessage());
         }
     }
 
@@ -66,6 +67,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
+        $category = $this->categoryService->findCategory($category);
         return (new CategoryResource($category));
     }
 
@@ -82,8 +84,12 @@ class CategoryController extends Controller
             "name" => "required"
         ]);
 
-        $category->fill($request->all())->save();
-        return (new CategoryResource($category))->response()->setStatusCode(202);
+        try {
+            $category = $this->categoryService->updateCategory($category, $request->all());
+            return (new CategoryResource($category))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -94,7 +100,11 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->delete();
-        return (new CategoryResource($category))->response()->setStatusCode(202);
+        try {
+            $this->categoryService->deleteCategory($category);
+            return (new CategoryResource($category))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

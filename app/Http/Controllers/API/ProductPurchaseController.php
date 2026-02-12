@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Utils\Helpers;
 use App\ProductPurchase;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductPurchaseResource;
+use App\Services\ProductPurchaseService;
+use Exception;
 
 class ProductPurchaseController extends Controller
 {
+    protected $productPurchaseService;
+
+    public function __construct(ProductPurchaseService $productPurchaseService)
+    {
+        $this->productPurchaseService = $productPurchaseService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +25,7 @@ class ProductPurchaseController extends Controller
      */
     public function index()
     {
-        $product_purchases = ProductPurchase::with("car_made")
-        ->paginate(Helpers::getValue('default-pagination'));
+        $product_purchases = $this->productPurchaseService->paginateProductPurchases();
         return (ProductPurchaseResource::collection($product_purchases));
     }
 
@@ -36,11 +43,12 @@ class ProductPurchaseController extends Controller
             "buy_price" => "required|numeric"
         ]);
 
-        $product_purchase = new ProductPurchase($request->all());
-        $product_purchase->user_id = auth()->user()->id;
-        $product_purchase->save();
-
-        return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(201);
+        try {
+            $product_purchase = $this->productPurchaseService->createProductPurchase($request->all());
+            return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -51,6 +59,7 @@ class ProductPurchaseController extends Controller
      */
     public function show(ProductPurchase $product_purchase)
     {
+        $product_purchase = $this->productPurchaseService->findProductPurchase($product_purchase);
         return (new ProductPurchaseResource($product_purchase));
     }
 
@@ -69,11 +78,12 @@ class ProductPurchaseController extends Controller
             "buy_price" => "required|numeric"
         ]);
 
-        $product_purchase->fill($request->all());
-        $product_purchase->user_id = auth()->user()->id;
-        $product_purchase->save();
-
-        return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(202);
+        try {
+            $product_purchase = $this->productPurchaseService->updateProductPurchase($product_purchase, $request->all());
+            return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -84,13 +94,20 @@ class ProductPurchaseController extends Controller
      */
     public function destroy(ProductPurchase $product_purchase)
     {
-        $product_purchase->delete();
-        return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(202);
+        try {
+            $this->productPurchaseService->deleteProductPurchase($product_purchase);
+            return (new ProductPurchaseResource($product_purchase))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     public function restore($id) {
-        $product_purchase = ProductPurchase::withTrashed()->findOrFail($id);
-        $product_purchase->restore();
-        return (new ProductPurchaseResource($product_purchase));
+        try {
+            $product_purchase = $this->productPurchaseService->restoreProductPurchase($id);
+            return (new ProductPurchaseResource($product_purchase));
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }
