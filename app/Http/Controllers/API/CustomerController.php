@@ -6,9 +6,18 @@ use App\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CustomerResource;
+use App\Services\CustomerService;
+use Exception;
 
 class CustomerController extends Controller
 {
+    protected $customerService;
+
+    public function __construct(CustomerService $customerService)
+    {
+        $this->customerService = $customerService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,12 +25,12 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::paginate(config('tinyerp.default-pagination'));
+        $customers = $this->customerService->paginateCustomers();
         return CustomerResource::collection($customers);
     }
 
     public function all() {
-        $customers = Customer::all();
+        $customers = $this->customerService->getAllCustomers();
         return CustomerResource::collection($customers);
     }
 
@@ -38,8 +47,12 @@ class CustomerController extends Controller
             'phone' => 'required'
         ]);
 
-        $customer = Customer::create($request->all());
-        return (new CustomerResource($customer))->response()->setStatusCode(201);
+        try {
+            $customer = $this->customerService->createCustomer($request->all());
+            return (new CustomerResource($customer))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -50,6 +63,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $customer = $this->customerService->findCustomer($customer);
         return new CustomerResource($customer);
     }
 
@@ -62,8 +76,17 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        $customer->fill($request->all())->save();
-        return (new CustomerResource($customer))->response()->setStatusCode(202);
+        $this->validate($request, [
+            'name' => 'required',
+            'phone' => 'required'
+        ]);
+
+        try {
+            $customer = $this->customerService->updateCustomer($customer, $request->all());
+            return (new CustomerResource($customer))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -74,7 +97,11 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        $customer->delete();
-        return (new CustomerResource($customer))->response()->setStatusCode(202);
+        try {
+            $this->customerService->deleteCustomer($customer);
+            return (new CustomerResource($customer))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

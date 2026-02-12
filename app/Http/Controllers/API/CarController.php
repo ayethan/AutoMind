@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\Car;
-use App\Utils\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Resources\CarResource;
 use App\Http\Controllers\Controller;
+use App\Services\CarService;
+use Exception;
 
 class CarController extends Controller
 {
+    protected $carService;
+
+    public function __construct(CarService $carService)
+    {
+        $this->carService = $carService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +25,7 @@ class CarController extends Controller
      */
     public function index()
     {
-        $cars = Car::with("car_made", "customer")
-        ->paginate(Helpers::getValue('default-pagination'));
+        $cars = $this->carService->paginateCars();
         return (CarResource::collection($cars));
     }
 
@@ -34,8 +41,12 @@ class CarController extends Controller
             "car_no" => "required|unique:cars"
         ]);
 
-        $car = Car::create($request->all());
-        return (new CarResource($car))->response()->setStatusCode(201);
+        try {
+            $car = $this->carService->createCar($request->all());
+            return (new CarResource($car))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -46,7 +57,7 @@ class CarController extends Controller
      */
     public function show(Car $car)
     {
-        $car->load(["car_made", "customer"]);
+        $car = $this->carService->findCar($car);
         return (new CarResource($car));
     }
 
@@ -63,8 +74,12 @@ class CarController extends Controller
             "car_no" => "required|unique:cars,car_no,".$car->id
         ]);
 
-        $car->fill($request->all())->save();
-        return (new CarResource($car))->response()->setStatusCode(202);
+        try {
+            $car = $this->carService->updateCar($car, $request->all());
+            return (new CarResource($car))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -75,7 +90,11 @@ class CarController extends Controller
      */
     public function destroy(Car $car)
     {
-        $car->delete();
-        return (new CarResource($car))->response()->setStatusCode(202);
+        try {
+            $this->carService->deleteCar($car);
+            return (new CarResource($car))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

@@ -6,9 +6,18 @@ use App\Expense;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseResource;
+use App\Services\ExpenseService;
+use Exception;
 
 class ExpenseController extends Controller
 {
+    protected $expenseService;
+
+    public function __construct(ExpenseService $expenseService)
+    {
+        $this->expenseService = $expenseService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +25,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $expenses = Expense::orderBy('id', 'DESC')->paginate(config('tinyerp.default-pagination'));
+        $expenses = $this->expenseService->paginateExpenses();
         return ExpenseResource::collection($expenses);
     }
 
@@ -34,8 +43,12 @@ class ExpenseController extends Controller
             'expense_type_id' => 'required|numeric'
         ]);
 
-        $expense = Expense::create($request->all());
-        return (new ExpenseResource($expense))->response()->setStatusCode(201);
+        try {
+            $expense = $this->expenseService->createExpense($request->all());
+            return (new ExpenseResource($expense))->response()->setStatusCode(201);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -46,6 +59,7 @@ class ExpenseController extends Controller
      */
     public function show(Expense $expense)
     {
+        $expense = $this->expenseService->findExpense($expense);
         return (new ExpenseResource($expense));
     }
 
@@ -64,8 +78,12 @@ class ExpenseController extends Controller
             'expense_type_id' => 'numeric'
         ]);
 
-        $expense->fill($request->all())->save();
-        return (new ExpenseResource($expense))->response()->setStatusCode(202);
+        try {
+            $expense = $this->expenseService->updateExpense($expense, $request->all());
+            return (new ExpenseResource($expense))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -76,7 +94,11 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense)
     {
-        $expense->delete();
-        return (new ExpenseResource($expense))->response()->setStatusCode(202);
+        try {
+            $this->expenseService->deleteExpense($expense);
+            return (new ExpenseResource($expense))->response()->setStatusCode(202);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }

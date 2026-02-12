@@ -6,9 +6,18 @@ use App\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ServiceResource;
+use App\Services\ServiceService; // New import
+use Exception;
 
 class ServiceController extends Controller
 {
+    protected $serviceService;
+
+    public function __construct(ServiceService $serviceService)
+    {
+        $this->serviceService = $serviceService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +25,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::paginate(config('tinyerp.default-pagination'));
+        $services = $this->serviceService->paginateServices();
         return ServiceResource::collection($services);
     }
 
@@ -28,18 +37,23 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $service = Service::create($request->all());
-        return new ServiceResource($service);
+        try {
+            $service = $this->serviceService->createService($request->all());
+            return new ServiceResource($service);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  App\Service  $service
      * @return \Illuminate\Http\Response
      */
     public function show(Service $service)
     {
+        $service = $this->serviceService->findService($service);
         return new ServiceResource($service);
     }
 
@@ -47,24 +61,32 @@ class ServiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  App\Service  $service
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Service $service)
     {
-        $service->fill($request->all())->save();
-        return new ServiceResource($service);
+        try {
+            $service = $this->serviceService->updateService($service, $request->all());
+            return new ServiceResource($service);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  App\Service  $service
      * @return \Illuminate\Http\Response
      */
     public function destroy(Service $service)
     {
-        $service->delete();
-        return new ServiceResource($service);
+        try {
+            $this->serviceService->deleteService($service);
+            return new ServiceResource($service);
+        } catch (Exception $e) {
+            abort(500, 'Server Error: ' . $e->getMessage());
+        }
     }
 }
