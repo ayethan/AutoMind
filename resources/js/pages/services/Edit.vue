@@ -1,0 +1,122 @@
+<template>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3>Edit Service</h3>
+            </div>
+        </div>
+        <hr>
+        <div class="row" v-if="errors">
+            <div class="col">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul>
+                        <li v-for="(item, index) in errors" :key="index">
+                            <strong> {{item.join('\n')}} </strong>
+                        </li>
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-xs-12">
+                <form @submit.prevent="update">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="nmae" class="form-control" v-model="old_service.name">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea type="text" id="description" class="form-control" v-model="old_service.description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" class="form-control" v-model="old_service.price">
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">Remark</label>
+                        <textarea type="text" id="remark" class="form-control" v-model="old_service.remark"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import validate from "validate.js";
+    export default {
+        name: "ServiceEdit",
+        async created() {
+            try {
+
+                var response = await this.getServiceByID(this.$route.params.id);
+                this.old_service = response.data;
+            } catch(e) {
+                this.errors= {
+                    "serer_error": [
+                        e.message
+                    ]
+                };
+            }
+        },
+        data() {    
+            return {
+                old_service: {
+                    name: "",
+                    price: "",
+                    remark: "",
+                    description: ""
+                }, 
+                validation_rules: {
+                    name: {
+                        presence: true,
+                        length:{
+                            minimum: 1,
+                            message: "should have at least 1 character."
+                        }
+                    },
+                    price: {
+                        presence: true,
+                        numericality: {
+                            onlyInteger: true,
+                            greaterThan: 0,
+                            message: "must be an integer."
+                        }
+                    }
+                },
+                errors: null
+            }
+        },
+        methods: {
+            update() {
+                this.errors = null;
+
+                const errors = validate(this.old_service, this.validation_rules);
+
+                if(errors) {
+                    this.errors = errors;
+                    return;
+                }
+
+                var app = this;
+                axios.put(`/api/services/${this.$route.params.id}`, this.old_service)
+                .then((response) => {
+                    app.$store.dispatch('service/reload');
+                    app.$router.push({ path: "/services" });
+                })
+                .catch((error) => {
+                    app.errors = error.response.data.errors;
+                });
+            },
+            getServiceByID(id) {
+                return axios.get(`/api/services/${id}`);
+            }
+        }
+    }
+</script>
