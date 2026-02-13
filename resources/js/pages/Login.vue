@@ -4,7 +4,7 @@
             <div class="col-lg-4 col-md-6 col-sm-12 align-self-center">
                 <div class="row justify-content-center text-center">
                     <div class="col">
-                        <h1><strong>Tiny ERP</strong></h1>
+                        <h1><strong>AutoMind</strong></h1>
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -35,7 +35,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group row" v-if="authError">
                                 <div class="alert alert-danger">
                                     <p>{{authError}}</p>

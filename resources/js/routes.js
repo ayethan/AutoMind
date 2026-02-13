@@ -55,6 +55,11 @@ import CarMain from './pages/cars/Main.vue';
 import CarCreate from './pages/cars/Create.vue';
 import CarIndex from './pages/cars/Index.vue';
 import CarEdit from './pages/cars/Edit.vue';
+import QuotationMain from './pages/quotations/Main.vue';
+import QuotationCreate from './pages/quotations/Create.vue';
+import QuotationIndex from './pages/quotations/Index.vue';
+import QuotationEdit from './pages/quotations/Edit.vue';
+import QuotationShow from './pages/quotations/Show.vue';
 
 export const routes = [
     {
@@ -256,6 +261,31 @@ export const routes = [
             {
                 path: ":id/password/reset",
                 component: ResetPassword
+            }
+        ]
+    },
+    {
+        path: '/quotations',
+        component: QuotationMain,
+        meta: {
+            requiresAuth: true
+        },
+        children: [
+            {
+                path: '/',
+                component: QuotationIndex
+            },
+            {
+                path: 'create',
+                component: QuotationCreate
+            },
+            {
+                path: ':id',
+                component: QuotationShow
+            },
+            {
+                path: ':id/edit',
+                component: QuotationEdit
             }
         ]
     },

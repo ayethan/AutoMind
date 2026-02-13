@@ -19,6 +19,11 @@ class RepositoryServiceProvider extends ServiceProvider
             UserRepositoryInterface::class,
             EloquentUserRepository::class
         );
+
+        $this->app->bind(
+            \App\Repositories\QuotationRepositoryInterface::class,
+            \App\Repositories\EloquentQuotationRepository::class
+        );
     }
 
     /**
