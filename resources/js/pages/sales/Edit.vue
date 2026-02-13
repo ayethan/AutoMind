@@ -225,14 +225,16 @@
                   </tr>
                   <tr>
                     <td colspan="6">Discount</td>
-                    <input
-                      @input="updateSale"
-                      type="number"
-                      min="0"
-                      step="1"
-                      class="form-control text-right my-auto"
-                      v-model="sale.discount"
-                    >
+                    <td>
+                      <input
+                        @input="updateSale"
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="form-control text-right my-auto"
+                        v-model="sale.discount"
+                      >
+                    </td>
                     <td></td>
                   </tr>
                   <tr>

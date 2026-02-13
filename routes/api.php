@@ -83,4 +83,6 @@ Route::group([ 'middleware' => 'auth:api' ], function() {
 
     Route::put('users/{user}/password', 'API\UserController@passwordReset');
     Route::apiResource('users', 'API\UserController');
+
+    Route::apiResource('quotations', 'API\QuotationController');
 });

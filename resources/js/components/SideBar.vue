@@ -53,6 +53,17 @@
             </div>
         </li>
         <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="quotationsDropDown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-fw fa-car"></i>
+                <span>Quotations</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="quotationsDropDown">
+                <router-link to="/quotations" class="dropdown-item">List</router-link>
+                <div class="dropdown-divider"></div>
+                <router-link to="/quotations/create" class="dropdown-item">Create Quotation</router-link>
+            </div>
+        </li>
+        <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="suppliersDropDown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-fw fa-people-carry"></i>
                 <span>Suppliers</span>

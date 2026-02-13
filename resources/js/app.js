@@ -1,59 +1,70 @@
 require('./bootstrap');
 
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { createStore } from 'vuex';
 
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import {routes} from './routes';
-import Store from './store';
+import { routes } from './routes';
+import StoreData from './store';
 import MainComponent from './components/MainComponent';
-import {setAuthenticationHeader, getUser} from './helpers/auth';
+import { setAuthenticationHeader, getUser } from './helpers/auth';
 
+// 1. Setup Vuex Store (PLAIN OBJECT -> createStore)
+const store = createStore(StoreData);
 
-Vue.use(VueRouter);
-Vue.use(Vuex);
-
-const store = new Vuex.Store(Store);
-
-const router = new VueRouter({
+// 2. Setup Router (Array -> createRouter)
+const router = createRouter({
+    history: createWebHistory(),
     routes,
-    mode: 'history'
 });
 
+/* STOP! Ensure there are NO lines like these below:
+   Vue.use(VueRouter); <--- DELETE THIS
+   Vue.use(Vuex);      <--- DELETE THIS
+*/
+
+// 3. Navigation Guard
 router.beforeEach((to, from, next) => {
-    var requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    var user = store.state.auth.current_user;
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-    if(requiresAuth && !user) {
-        next('/login');
-    } else if(to.path == '/login' && user) {
-        next('/');
-    } else {
-        next();
+    // Safety check: ensure store and auth state exist
+    const user = (store.state.auth) ? store.state.auth.current_user : null;
+
+    if (requiresAuth && !user) {
+        return next('/login');
     }
+    next();
 });
 
-axios.interceptors.response.use(null , function (error) {
-    if(error.response.status == 401) {
-        store.commit('auth/logout');
-    }
-    return Promise.reject(error);
-  });
+// 4. Create the App Instance
+const app = createApp(MainComponent);
 
-var app = new Vue({
-    el: '#app',
-    router,
-    store,
-    components: {
-        'main-app': MainComponent
-    },
-    created() {
-        const user = getUser();
-        if(user) {
-            setAuthenticationHeader(user.token);
+// 5. Global Properties & Auth Setup
+const user = getUser();
+if (user) {
+    setAuthenticationHeader(user.token);
+    // Directly setting state for the initial boot
+    store.state.auth.current_user = user;
+}
+
+app.config.globalProperties.axios = axios;
+
+// 6. Axios Interceptor
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            store.commit('auth/logout');
+            router.push('/login');
         }
+        return Promise.reject(error);
     }
-});
+);
+
+// 7. Mount Plugins to the INSTANCE (This is the new .use())
+app.use(router);
+app.use(store);
+app.mount('#app');
 
 require('./jquery.easing');
 require('./sb-admin');

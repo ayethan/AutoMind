@@ -1,4 +1,19 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/css/app.css": "/css/app.css",
+    "/fonts/fa-brands-400.eot?51931456e77f3dcc2003984ea1824718": "/fonts/fa-brands-400.eot?51931456e77f3dcc2003984ea1824718",
+    "/fonts/fa-brands-400.woff2?6402aa0b5a15d97dac17341524e9c68f": "/fonts/fa-brands-400.woff2?6402aa0b5a15d97dac17341524e9c68f",
+    "/fonts/fa-brands-400.woff?2ab8272acad26547aa5704a2fbf3bfda": "/fonts/fa-brands-400.woff?2ab8272acad26547aa5704a2fbf3bfda",
+    "/fonts/fa-brands-400.ttf?e4ecd7a75b2f2cbc30c901a51fb5b581": "/fonts/fa-brands-400.ttf?e4ecd7a75b2f2cbc30c901a51fb5b581",
+    "/fonts/fa-brands-400.svg?405bd81e7c54fd4008bf0585785fae1f": "/fonts/fa-brands-400.svg?405bd81e7c54fd4008bf0585785fae1f",
+    "/fonts/fa-regular-400.eot?186b1f3e156b73b341e324eaafa21b89": "/fonts/fa-regular-400.eot?186b1f3e156b73b341e324eaafa21b89",
+    "/fonts/fa-regular-400.woff2?cb5f6f809f276a5eba76b65b377907f9": "/fonts/fa-regular-400.woff2?cb5f6f809f276a5eba76b65b377907f9",
+    "/fonts/fa-regular-400.woff?52d4b336f9c107531881f3a41b8bd48a": "/fonts/fa-regular-400.woff?52d4b336f9c107531881f3a41b8bd48a",
+    "/fonts/fa-regular-400.ttf?86c079f6b3266bf7e77a8e820ae38a38": "/fonts/fa-regular-400.ttf?86c079f6b3266bf7e77a8e820ae38a38",
+    "/fonts/fa-regular-400.svg?4b831aa96e1516568e5e5ed87bfb4c66": "/fonts/fa-regular-400.svg?4b831aa96e1516568e5e5ed87bfb4c66",
+    "/fonts/fa-solid-900.eot?5b08d3ada9ef0666cabc108e56cd3881": "/fonts/fa-solid-900.eot?5b08d3ada9ef0666cabc108e56cd3881",
+    "/fonts/fa-solid-900.woff2?85475257955f4bf4f6d944d90be035ca": "/fonts/fa-solid-900.woff2?85475257955f4bf4f6d944d90be035ca",
+    "/fonts/fa-solid-900.woff?e98fbd160b2f50ebfe4dbdc5383fce03": "/fonts/fa-solid-900.woff?e98fbd160b2f50ebfe4dbdc5383fce03",
+    "/fonts/fa-solid-900.ttf?cbd59280a84ea502978e021dd09c8f29": "/fonts/fa-solid-900.ttf?cbd59280a84ea502978e021dd09c8f29",
+    "/fonts/fa-solid-900.svg?e15864144b9712e2ef72ac9da83fcaea": "/fonts/fa-solid-900.svg?e15864144b9712e2ef72ac9da83fcaea"
 }

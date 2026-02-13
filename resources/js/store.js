@@ -11,6 +11,7 @@ import subCategoryModule from "./store-modules/subCategoryModule";
 import supplierModule from "./store-modules/supplierModule";
 import carMadeModule from "./store-modules/carMadeModule";
 import carModule from "./store-modules/carModule";
+import quotationModule from "./store-modules/quotationModule";
 
 export default {
   modules: {
@@ -26,6 +27,7 @@ export default {
     sub_category: subCategoryModule,
     supplier: supplierModule,
     car_made: carMadeModule,
-    car: carModule
+    car: carModule,
+    quotation: quotationModule
   }
 } 
