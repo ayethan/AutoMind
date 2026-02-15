@@ -30,7 +30,7 @@ export default {
 
         removeProductByID(state, payload) {
             _.remove(state.products, (product) => {
-                product.id == payload.id;
+                return product.id == payload.id;
             });
         },
 
@@ -42,17 +42,19 @@ export default {
 
     actions: {
         getProducts(context, payload = {}) {
-            if(payload.page == context.state.pagination_meta.current_page) {
-                return; 
-            }
+            // if(payload.page == context.state.pagination_meta.current_page) {
+            //     console.log("Page is already current, returning.");
+            //     return;
+            // }
             const new_param = Object.assign({}, context.state.filter, payload);
-            axios.get("/api/products", {params: new_param}).then((response) => { 
+            axios.get("/api/products", {params: new_param}).then((response) => {
                 context.commit("setProducts", response.data.data);
-                context.commit("setMeta", response.data.meta); 
-                context.commit("setLoaded", true); 
+                context.commit("setMeta", response.data.meta);
+                context.commit("setLoaded", true);
+            }).catch(error => {
+                console.error("API call failed:", error);
             });
         },
-
         removeProductByID(context, payload = {}) {
             context.commit("removeProductByID", payload);
         },

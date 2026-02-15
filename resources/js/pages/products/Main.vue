@@ -4,6 +4,9 @@
 
 <script>
     export default {
-        name: "ProductMain"
+        name: "ProductMain",
+        mounted() {
+            console.log("ProductMain mounted successfully!");
+        }
     }
 </script>

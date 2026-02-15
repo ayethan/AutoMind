@@ -16,17 +16,17 @@
                         <p><strong>Title:</strong> {{ getQuotation.title }}</p>
                         <p><strong>Customer:</strong> {{ getQuotation.customer ? getQuotation.customer.name : 'N/A' }}</p>
                         <p><strong>Created By:</strong> {{ getQuotation.user ? getQuotation.user.name : 'N/A' }}</p>
-                        <p><strong>Quotation Date:</strong> {{ getQuotation.quotation_date | formatDate }}</p>
-                        <p><strong>Expiration Date:</strong> {{ getQuotation.expiration_date ? (getQuotation.expiration_date | formatDate) : 'N/A' }}</p>
+                        <p><strong>Quotation Date:</strong> {{ formatDate(getQuotation.quotation_date) }}</p>
+                        <p><strong>Expiration Date:</strong> {{ getQuotation.expiration_date ? formatDate(getQuotation.expiration_date) : 'N/A' }}</p>
                         <p><strong>Status:</strong> {{ getQuotation.status }}</p>
                         <p><strong>Notes:</strong> {{ getQuotation.notes || 'N/A' }}</p>
                     </div>
                     <div class="col-md-6 text-right">
                         <h5>Financial Summary</h5>
-                        <p><strong>Subtotal:</strong> {{ getQuotation.subtotal | formatCurrency }}</p>
-                        <p><strong>Discount:</strong> {{ getQuotation.discount_amount | formatCurrency }}</p>
-                        <p><strong>Tax:</strong> {{ getQuotation.tax_amount | formatCurrency }}</p>
-                        <h4><strong>Total Amount:</strong> {{ getQuotation.total_amount | formatCurrency }}</h4>
+                        <p><strong>Subtotal:</strong> {{ formatCurrency(getQuotation.subtotal) }}</p>
+                        <p><strong>Discount:</strong> {{ formatCurrency(getQuotation.discount_amount) }}</p>
+                        <p><strong>Tax:</strong> {{ formatCurrency(getQuotation.tax_amount) }}</p>
+                        <h4><strong>Total Amount:</strong> {{ formatCurrency(getQuotation.total_amount) }}</h4>
                     </div>
                 </div>
 
@@ -48,9 +48,9 @@
                             <tr v-for="item in getQuotation.products" :key="item.product_id">
                                 <td>{{ item.product ? item.product.name : 'N/A' }}</td>
                                 <td>{{ item.quantity }}</td>
-                                <td>{{ item.price | formatCurrency }}</td>
-                                <td>{{ item.discount | formatCurrency }}</td>
-                                <td>{{ item.total | formatCurrency }}</td>
+                                <td>{{ formatCurrency(item.price) }}</td>
+                                <td>{{ formatCurrency(item.discount) }}</td>
+                                <td>{{ formatCurrency(item.total) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -75,9 +75,9 @@
                             <tr v-for="item in getQuotation.services" :key="item.service_id">
                                 <td>{{ item.service ? item.service.name : 'N/A' }}</td>
                                 <td>{{ item.quantity }}</td>
-                                <td>{{ item.price | formatCurrency }}</td>
-                                <td>{{ item.discount | formatCurrency }}</td>
-                                <td>{{ item.total | formatCurrency }}</td>
+                                <td>{{ formatCurrency(item.price) }}</td>
+                                <td>{{ formatCurrency(item.discount) }}</td>
+                                <td>{{ formatCurrency(item.total) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -101,8 +101,6 @@ export default {
     },
     methods: {
         ...mapActions('quotation', ['fetchQuotationById']),
-    },
-    filters: {
         formatDate(value) {
             if (!value) return '';
             const options = { year: 'numeric', month: 'short', day: 'numeric' };

@@ -12,6 +12,10 @@ const user = getUser();
         loading: false
     },
 
+    getters: {
+        currentUser: state => state.current_user,
+    },
+
     mutations: {
         login(state) {
             state.loading = true;
@@ -32,6 +36,9 @@ const user = getUser();
             localStorage.removeItem("user");
             state.loading = false;
             state.current_user = null;
+        },
+        setInitialUser(state, user) {
+            state.current_user = user;
         }
     },
 

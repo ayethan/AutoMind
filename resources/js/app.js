@@ -28,7 +28,7 @@ router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
     // Safety check: ensure store and auth state exist
-    const user = (store.state.auth) ? store.state.auth.current_user : null;
+    const user = store.getters['auth/currentUser'];
 
     if (requiresAuth && !user) {
         return next('/login');
@@ -44,7 +44,7 @@ const user = getUser();
 if (user) {
     setAuthenticationHeader(user.token);
     // Directly setting state for the initial boot
-    store.state.auth.current_user = user;
+    store.commit('auth/setInitialUser', user);
 }
 
 app.config.globalProperties.axios = axios;

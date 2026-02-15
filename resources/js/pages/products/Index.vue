@@ -86,7 +86,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Are you sure to delete this product?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -124,9 +124,7 @@ export default {
             this.$store.dispatch("product/getProducts", {page: page});
         },
         async initialize() {
-            if(!this.$store.state.product.loaded) {
-                await this.$store.dispatch("product/getProducts");            
-            }
+            await this.$store.dispatch("product/getProducts");            
         },
         getEditLink(id) {
             return `/products/${id}/edit`;

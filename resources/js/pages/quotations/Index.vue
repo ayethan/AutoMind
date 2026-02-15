@@ -25,8 +25,8 @@
                             <td>{{ quotation.id }}</td>
                             <td>{{ quotation.title }}</td>
                             <td>{{ quotation.customer ? quotation.customer.name : 'N/A' }}</td>
-                            <td>{{ quotation.quotation_date | formatDate }}</td>
-                            <td>{{ quotation.total_amount | formatCurrency }}</td>
+                            <td>{{ formatDate(quotation.quotation_date) }}</td>
+                            <td>{{ formatCurrency(quotation.total_amount) }}</td>
                             <td>{{ quotation.status }}</td>
                             <td>
                                 <router-link :to="`/quotations/${quotation.id}`" class="btn btn-info btn-sm">View</router-link>
@@ -68,17 +68,6 @@ export default {
             if (!dateString) return '';
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
             return new Date(dateString).toLocaleDateString(undefined, options);
-        },
-        formatCurrency(value) {
-            if (typeof value !== 'number') return value;
-            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        }
-    },
-    filters: {
-        formatDate(value) {
-            if (!value) return '';
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(value).toLocaleDateString(undefined, options);
         },
         formatCurrency(value) {
             if (typeof value !== 'number') return value;

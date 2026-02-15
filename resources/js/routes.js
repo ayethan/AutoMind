@@ -60,10 +60,11 @@ import QuotationCreate from './pages/quotations/Create.vue';
 import QuotationIndex from './pages/quotations/Index.vue';
 import QuotationEdit from './pages/quotations/Edit.vue';
 import QuotationShow from './pages/quotations/Show.vue';
+import NotFound from './pages/NotFound.vue'; // Import the NotFound component
 
 export const routes = [
     {
-        path: '/',
+        path: '',
         redirect: 'dashboard'
     },
     {
@@ -88,7 +89,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: ProductIndex
             },
             {
@@ -113,7 +114,7 @@ export const routes = [
         },
         children: [
             {
-                path:'/',
+                path:'',
                 component: ServiceIndex
             },
             {
@@ -134,7 +135,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: CustomerIndex
             },
             {
@@ -146,7 +147,7 @@ export const routes = [
                 component: CustomerEdit
             }
         ]
-    }, 
+    },
     {
         path: '/sales',
         component: SaleMain,
@@ -155,7 +156,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: SaleIndex
             },
             {
@@ -184,7 +185,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: ExpenseTypeIndex
             },
             {
@@ -205,7 +206,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: ExpenseIndex
             },
             {
@@ -247,7 +248,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: UserIndex
             },
             {
@@ -272,7 +273,7 @@ export const routes = [
         },
         children: [
             {
-                path: '/',
+                path: '',
                 component: QuotationIndex
             },
             {
@@ -297,7 +298,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: SupplierIndex
             },
             {
@@ -318,7 +319,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: CategoryIndex
             },
             {
@@ -339,7 +340,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: SubCategoryIndex
             },
             {
@@ -360,7 +361,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: CarMadeIndex
             },
             {
@@ -381,7 +382,7 @@ export const routes = [
         },
         children: [
             {
-                path: "/",
+                path: "",
                 component: CarIndex
             },
             {
@@ -393,5 +394,11 @@ export const routes = [
                 component: CarEdit
             }
         ]
+    },
+    // Catch-all route for 404 Not Found
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: NotFound
     }
 ];
