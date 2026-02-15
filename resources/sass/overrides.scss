@@ -1,5 +1,263 @@
-@media (min-width: 992px) {
-    .modal-lg {
-        max-width: 950px;
+// Custom styles for a cleaner, more modern look.
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#wrapper {
+  display: flex;
+}
+
+#content-wrapper {
+  background-color: #f8f9fc;
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex-grow: 1;
+}
+
+.container-fluid {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.card {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+  border: none;
+  border-radius: 0.35rem;
+}
+
+.card-header {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0;
+  background-color: #f8f9fc;
+  border-bottom: 1px solid #e3e6f0;
+  color: #858796;
+  font-weight: bold;
+}
+
+.btn {
+  border-radius: 0.35rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background-color: #4e73df;
+  border-color: #4e73df;
+
+  &:hover {
+    background-color: #2e59d9;
+    border-color: #2e59d9;
+  }
+}
+
+.navbar-nav .nav-item .nav-link {
+  white-space: normal;
+  padding: 0.5rem 1rem;
+}
+
+// Sidebar improvements
+.sidebar {
+  width: 14rem !important;
+  background-color: #3a3b45;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "Nunito", sans-serif;
+
+  .nav-item {
+    .nav-link {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.75rem 1rem; // Reduced padding
+      display: flex;
+      align-items: center;
+
+      i {
+        font-size: 1.1rem;
+        margin-right: 0.75rem;
+        width: 1.5rem; // Fixed width for icons
+        text-align: center;
+      }
+
+      &:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.router-link-exact-active,
+      &.active {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-left: 4px solid #4e73df; // Active indicator
+        padding-left: calc(1rem - 4px);
+      }
     }
+
+    &.dropdown {
+      .dropdown-menu {
+        background-color: #3a3b45;
+        border: none;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+
+        .dropdown-item {
+          color: rgba(255, 255, 255, 0.6);
+          padding: 0.75rem 1rem 0.75rem 2.25rem; // Adjusted padding, adjusted for indentation
+          &:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+          &.router-link-exact-active,
+          &.active {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #4e73df; // Active indicator
+            padding-left: calc(2.25rem - 4px);
+          }
+        }
+        .dropdown-divider {
+            border-top: 1px solid rgba(255,255,255,.05);
+        }
+      }
+    }
+  }
+
+  // Collapsed sidebar adjustments
+  &.toggled {
+    width: 3.5rem !important;
+    .nav-item {
+      .nav-link {
+        text-align: center;
+        padding: 1rem 0.75rem;
+        i {
+          margin-right: 0;
+        }
+        span {
+          display: none;
+        }
+      }
+      &.dropdown {
+        .dropdown-menu {
+          position: absolute;
+          left: 3.5rem;
+          top: 0;
+          margin: 0;
+          border-radius: 0.35rem;
+          box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+          .dropdown-item {
+            padding: 0.75rem 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// Top Navigation Bar (Topbar)
+.navbar.static-top {
+  height: auto;
+  // min-height: 56px; // Removed to reduce vertical space
+  background-color: #3a3b45 !important; // Dark background
+  // border-bottom: 1px solid #e3e6f0;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
+
+  .navbar-brand {
+    color: #fff; // White color for brand
+    font-weight: 700;
+  }
+
+  .form-inline .input-group {
+    .form-control {
+      border-radius: 0.35rem 0 0 0.35rem;
+      border-color: #e3e6f0;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      &:focus {
+        border-color: #4e73df;
+        box-shadow: none;
+      }
+    }
+    .btn {
+      border-radius: 0 0.35rem 0.35rem 0;
+      background-color: #4e73df;
+      border-color: #4e73df;
+      &:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+      }
+    }
+  }
+
+  .navbar-nav {
+    .nav-item {
+      .nav-link {
+        color: #fff; // Changed to white
+        &:hover {
+          color: #f8f9fc; // Light gray on hover
+        }
+        i {
+          font-size: 1.1rem;
+        }
+        .badge {
+          font-size: 0.6rem;
+          padding: 0.35em 0.5em;
+          position: relative;
+          top: -2px;
+          left: -3px;
+        }
+      }
+      &.dropdown .dropdown-toggle::after {
+        display: none; // Hide default caret
+      }
+      .dropdown-menu {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        border-radius: 0.35rem;
+        .dropdown-item {
+          color: #858796;
+          &:hover {
+            background-color: #f8f9fc;
+            color: #4e73df;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// Scroll to Top Button
+.scroll-to-top {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  display: none;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  color: #fff;
+  background-color: #4e73df;
+  line-height: 46px;
+  border-radius: 100%;
+  z-index: 1040;
+  &:focus,
+  &:hover {
+    color: white;
+  }
+  &:hover {
+    background-color: #2e59d9;
+  }
 }

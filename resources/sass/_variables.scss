@@ -1,20 +1,69 @@
-
 // Body
-$body-bg: #f8fafc;
+$body-bg: #f8f9fc;
 
 // Typography
-$font-family-sans-serif: "Nunito", sans-serif;
+$font-family-sans-serif: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // Colors
-$blue: #3490dc;
-$indigo: #6574cd;
-$purple: #9561e2;
-$pink: #f66D9b;
-$red: #e3342f;
-$orange: #f6993f;
-$yellow: #ffed4a;
-$green: #38c172;
-$teal: #4dc0b5;
-$cyan: #6cb2eb;
+$blue: #4e73df;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #e74a3b;
+$orange: #fd7e14;
+$yellow: #f6c23e;
+$green: #1cc88a;
+$teal: #20c9a6;
+$cyan: #36b9cc;
+$white: #fff;
+$gray-100: #f8f9fc;
+$gray-200: #eaecf4;
+$gray-300: #dddfeb;
+$gray-400: #d1d3e2;
+$gray-500: #b7b9cc;
+$gray-600: #858796;
+$gray-700: #6e707e;
+$gray-800: #5a5c69;
+$gray-900: #3a3b45;
+$black: #000;
+
+$primary: #4e73df; // A slightly richer blue
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+$light: $gray-100;
+$dark: $gray-900;
+
+// Override default Bootstrap variables here
+// For example:
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $gray-600,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark
+);
+
+// Custom
+$sidebar-dark-bg: $gray-900;
+$sidebar-dark-color: $gray-500;
+$sidebar-dark-hover-color: $gray-200;
+$sidebar-dark-active-color: $white;
+$sidebar-dark-submenu-bg: $gray-800;
+$sidebar-dark-submenu-color: $gray-400;
+$sidebar-dark-submenu-hover-color: $gray-200;
+$sidebar-dark-submenu-active-color: $white;
+
+$topbar-bg: $white;
+$topbar-color: $gray-600;
+$topbar-link-color: $gray-500;
+$topbar-link-hover-color: $gray-700;
+
+$card-border-radius: .35rem;
+$card-box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);
